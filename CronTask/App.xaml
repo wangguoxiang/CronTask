@@ -1,0 +1,38 @@
+﻿<Application x:Class="CronTask.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CronTask"
+             StartupUri="MVVM/Views/HttpsCheckerView.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <ResourceDictionary Source="Skins/MetroDark/MetroDark.MSControls.Core.Implicit.xaml" />
+                <ResourceDictionary Source="Skins/MetroDark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
+                <ResourceDictionary Source="Skins/OverwriteResources.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Dark Theme -->
+            <SolidColorBrush x:Key="BackgroundKey" Color="#FF181818" />
+
+            <Style TargetType="{x:Type TextBlock}" x:Key="TextStyle">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Margin" Value="2,0,2,0"/>
+                <Setter Property="FontSize" Value="10"/>
+            </Style>
+
+            <Style TargetType="{x:Type Rectangle}" x:Key="RectangleStyle">
+                <Setter Property="RadiusX" Value="3"/>
+                <Setter Property="RadiusY" Value="3"/>
+                <Setter Property="Fill" Value="{Binding Version, Converter={StaticResource versionConverter}}"/>
+            </Style>
+
+            <Style TargetType="{x:Type Grid}" x:Key="GridStyle">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="ClipToBounds" Value="True"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
