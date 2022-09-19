@@ -11,6 +11,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using NPOI;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using CronTask.MVVM.Models;
 
 namespace CronTask.MVVM.ViewModels
 {
@@ -23,14 +24,14 @@ namespace CronTask.MVVM.ViewModels
         #region Public Properties
         public string WindowTitle { get; set; }
         public string ImportFileLocation { get; set; }
-        public DataTable XlsxTable { get; set; }
+        public List<HttpsData> XlsxTable { get; set; }
+      
         #endregion
 
         #region Constructor
         public MainsHandleViewModel()
         {
             WindowTitle = "定时任务";
-            XlsxTable = new DataTable();
         }
         #endregion
 
@@ -86,7 +87,7 @@ namespace CronTask.MVVM.ViewModels
                     {
                         stream.Position = 0;
                         XSSFWorkbook xssWorkbook = new XSSFWorkbook(stream);
-                        sheet = xssWorkbook.GetSheetAt(1);
+                        sheet = xssWorkbook.GetSheetAt(0);
                         IRow headerRow = sheet.GetRow(0);
                         int cellCount = headerRow.LastCellNum;
                         for (int j = 0; j < cellCount; j++)
@@ -94,7 +95,7 @@ namespace CronTask.MVVM.ViewModels
                             ICell cell = headerRow.GetCell(j);
                             if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
                             {
-                                XlsxTable.Columns.Add(cell.ToString());
+                               // XlsxTable.Columns.Add(cell.ToString());
                             }
                         }
 
@@ -113,8 +114,8 @@ namespace CronTask.MVVM.ViewModels
                                     }
                                 }
                             }
-                            if (rowList.Count > 0)
-                                XlsxTable.Rows.Add(rowList.ToArray());
+                           // if (rowList.Count > 0)
+                               // XlsxTable.Rows.Add(rowList.ToArray());
 
                             rowList.Clear();
                         }

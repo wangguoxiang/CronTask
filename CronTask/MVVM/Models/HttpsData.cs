@@ -8,5 +8,10 @@ namespace CronTask.MVVM.Models
 {
     public class HttpsData
     {
+        public int ID;
+        public string DNS;
+        public string HaveTime;
+        public string IsChecker;
+        public string Alerte;
     }
 }

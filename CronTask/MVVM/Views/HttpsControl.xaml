@@ -24,9 +24,15 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal" Margin="5 5 5 5">
-            <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding XlsxTable.DefaultView}" 
+            <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" 
                                ScrollViewer.HorizontalScrollBarVisibility="Visible" Width="792" >
-                <!--DataGridView绑定数据源时，会自动显示未绑定的列，怎么让其不显示未绑定的列呢?设置AutoGenerateColumns属性为false即可-->
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="56" FontSize="15" Header="域名" Binding="{Binding DNS}"/>
+                    <DataGridTextColumn Width="140" Header="有效时间" FontSize="15"  Binding="{Binding HaveTime}"/>
+                    <DataGridTextColumn Width="140" Header="是否过期" FontSize="15"  Binding="{Binding IsChecker}"/>
+                    <DataGridTextColumn Width="140" Header="报警推送" FontSize="15"  Binding="{Binding Alerte}"/>
+                </DataGrid.Columns>
+     
             </DataGrid>
         </StackPanel>
     </Grid>

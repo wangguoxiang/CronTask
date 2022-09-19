@@ -23,7 +23,6 @@ namespace CronTask.MVVM.Views
         public HttpsControl()
         {
             InitializeComponent();
-            dataGrid.ColumnHeaderHeight = 50;
         }
     }
 }
