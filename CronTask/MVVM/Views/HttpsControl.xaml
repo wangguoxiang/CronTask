@@ -18,13 +18,14 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0 5 0 5">
             <Label Content="本地目录:" Width="90" Foreground="#FFEEEEEE"/>
-            <TextBox Width="300" Text="{Binding FileLocation}" IsReadOnly="True"/>
+            <TextBox Width="300" Text="{Binding ImportFileLocation}" IsReadOnly="True"/>
             <Button Margin="5 0 0 0" ToolTip="选择路径" Command="{Binding ImportExls}">
                 <Path Data="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" Fill="{StaticResource ForegroundBrush}" Stretch="Uniform" />
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal" Margin="5 5 5 5">
-            <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" Width="auto" >
+            <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" ItemsSource="{Binding XlsxTable.DefaultView}" 
+                               ScrollViewer.HorizontalScrollBarVisibility="Visible" Width="792" >
                 <!--DataGridView绑定数据源时，会自动显示未绑定的列，怎么让其不显示未绑定的列呢?设置AutoGenerateColumns属性为false即可-->
             </DataGrid>
         </StackPanel>

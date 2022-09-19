@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using NPOI;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace CronTask.MVVM.ViewModels
 {
@@ -20,13 +23,14 @@ namespace CronTask.MVVM.ViewModels
         #region Public Properties
         public string WindowTitle { get; set; }
         public string ImportFileLocation { get; set; }
-        public DataTable ExlsTable { get; set; }
+        public DataTable XlsxTable { get; set; }
         #endregion
 
         #region Constructor
         public MainsHandleViewModel()
         {
             WindowTitle = "定时任务";
+            XlsxTable = new DataTable();
         }
         #endregion
 
@@ -48,11 +52,11 @@ namespace CronTask.MVVM.ViewModels
         {
             try
             {
-           
+
                 var dlg = new CommonOpenFileDialog();
                 dlg.Title = "选择一个文件";
                 dlg.IsFolderPicker = false;
-                dlg.Filters.Add(new CommonFileDialogFilter("TXT Files","*.txt"));
+                dlg.Filters.Add(new CommonFileDialogFilter("Excel Files", "*.xlsx"));
                 dlg.InitialDirectory = ImportFileLocation;
                 dlg.AddToMostRecentlyUsedList = false;
                 dlg.AllowNonFileSystemItems = false;
@@ -63,7 +67,7 @@ namespace CronTask.MVVM.ViewModels
                 dlg.EnsureValidNames = true;
                 dlg.Multiselect = false;
                 dlg.ShowPlacesList = true;
-               
+
 
                 if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
                 {
@@ -72,26 +76,54 @@ namespace CronTask.MVVM.ViewModels
                     ImportFileLocation = folder.ToString();
                     OnPropertyChanged("ImportFileLocation");
 
-                    string sheetName = "sheet1";//Excel的工作表名称
-                    bool isColumnName = true;//判断第一行是否为标题列
-                    IWorkbook workbook;//创建一个工作薄接口
+                    List<string> rowList = new List<string>();
+                    ISheet sheet;
+
                     string fileExt = Path.GetExtension(ImportFileLocation).ToLower();//获取文件的拓展名
 
                     //创建一个文件流
-                    using (FileStream fs = new FileStream(ImportFileLocation, FileMode.Open, FileAccess.Read))
+                    using (var stream = new FileStream(ImportFileLocation, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        if (fileExt == ".xlsx")
+                        stream.Position = 0;
+                        XSSFWorkbook xssWorkbook = new XSSFWorkbook(stream);
+                        sheet = xssWorkbook.GetSheetAt(1);
+                        IRow headerRow = sheet.GetRow(0);
+                        int cellCount = headerRow.LastCellNum;
+                        for (int j = 0; j < cellCount; j++)
                         {
-                            workbook = new XSSFWorkbook(fs);
-                        }
-                        else
-                        {
-                            workbook = null;
+                            ICell cell = headerRow.GetCell(j);
+                            if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
+                            {
+                                XlsxTable.Columns.Add(cell.ToString());
+                            }
                         }
 
+                        for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
+                        {
+                            IRow row = sheet.GetRow(i);
+                            if (row == null) continue;
+                            if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+                            for (int j = row.FirstCellNum; j < cellCount; j++)
+                            {
+                                if (row.GetCell(j) != null)
+                                {
+                                    if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
+                                    {
+                                        rowList.Add(row.GetCell(j).ToString());
+                                    }
+                                }
+                            }
+                            if (rowList.Count > 0)
+                                XlsxTable.Rows.Add(rowList.ToArray());
+
+                            rowList.Clear();
+                        }
                     }
+
+                    OnPropertyChanged("XlsxTable");
                 }
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
