@@ -27,10 +27,10 @@
             <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" 
                                ScrollViewer.HorizontalScrollBarVisibility="Visible" Width="792" >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Width="56" FontSize="15" Header="域名" Binding="{Binding DNS}"/>
-                    <DataGridTextColumn Width="140" Header="有效时间" FontSize="15"  Binding="{Binding HaveTime}"/>
-                    <DataGridTextColumn Width="140" Header="是否过期" FontSize="15"  Binding="{Binding IsChecker}"/>
-                    <DataGridTextColumn Width="140" Header="报警推送" FontSize="15"  Binding="{Binding Alerte}"/>
+                    <DataGridTextColumn Width="56" FontSize="15" Header="域名" Binding="{Binding Path=DNS}"/>
+                    <DataGridTextColumn Width="140" Header="有效时间" FontSize="15"  Binding="{Binding Path=HaveTime}"/>
+                    <DataGridTextColumn Width="140" Header="是否过期" FontSize="15"  Binding="{Binding Path=IsChecker}"/>
+                    <DataGridTextColumn Width="140" Header="报警推送" FontSize="15"  Binding="{Binding Path=Alerte}"/>
                 </DataGrid.Columns>
      
             </DataGrid>

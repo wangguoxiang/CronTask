@@ -24,14 +24,21 @@ namespace CronTask.MVVM.ViewModels
         #region Public Properties
         public string WindowTitle { get; set; }
         public string ImportFileLocation { get; set; }
-        public List<HttpsData> XlsxTable { get; set; }
-      
+        public List<string> DNS { get; set; }
+        public List<string> HaveTime { get; set; }
+        public List<string> IsChecker { get; set; }
+        public List<string>  Alerte { get; set; }
+    
         #endregion
 
         #region Constructor
         public MainsHandleViewModel()
         {
             WindowTitle = "定时任务";
+            DNS = new List<string>();
+            HaveTime = new List<string>();
+            IsChecker = new List<string>();
+            Alerte = new List<string>();
         }
         #endregion
 
@@ -107,22 +114,20 @@ namespace CronTask.MVVM.ViewModels
                             if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                             for (int j = row.FirstCellNum; j < cellCount; j++)
                             {
-                                if (row.GetCell(j) != null)
+                              /*  if (row.GetCell(j) != null)
                                 {
                                     if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
                                     {
                                         rowList.Add(row.GetCell(j).ToString());
                                     }
-                                }
+                                }*/
                                 if ( j == 3 )
                                 {
-                                   XlsxTable.Add(HttpsData{
-                                                        ID: i
-                                                        DNS: row.GetCell(j).ToString()
-                                                        HaveTime: ""
-                                                        IsChecker: ""
-                                                        Alerte: ""
-                                                       });
+                                    DNS.Add(row.GetCell(j).ToString());
+                                    IsChecker.Add("");
+                                    HaveTime.Add("");
+                                    Alerte.Add("");
+                                  
                                 }
                             }
                             //if (rowList.Count > 0)
@@ -131,8 +136,10 @@ namespace CronTask.MVVM.ViewModels
                             rowList.Clear();
                         }
                     }
-
-                    OnPropertyChanged("XlsxTable");
+                    OnPropertyChanged("DNS");
+                    OnPropertyChanged("IsChecker");
+                    OnPropertyChanged("Alerte");
+                    OnPropertyChanged("HaveTime");
                 }
             }
             catch (Exception ex)
