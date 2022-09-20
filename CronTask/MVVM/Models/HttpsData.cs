@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CronTask.MVVM.Models
 {
-    public class HttpsData
+    public struct HttpsData
     {
-        public int ID;
-        public string DNS;
-        public string HaveTime;
-        public string IsChecker;
-        public string Alerte;
+        public int ID { get; set; }
+        public string DNS { get; set; }
+        public string HaveTime { get; set; }
+        public string IsChecker { get; set; }
+        public string Alerte { get; set; }
     }
 }

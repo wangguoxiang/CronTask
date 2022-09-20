@@ -87,17 +87,18 @@ namespace CronTask.MVVM.ViewModels
                     {
                         stream.Position = 0;
                         XSSFWorkbook xssWorkbook = new XSSFWorkbook(stream);
-                        sheet = xssWorkbook.GetSheetAt(0);
+                        sheet = xssWorkbook.GetSheetAt(1);
                         IRow headerRow = sheet.GetRow(0);
                         int cellCount = headerRow.LastCellNum;
-                        for (int j = 0; j < cellCount; j++)
-                        {
-                            ICell cell = headerRow.GetCell(j);
-                            if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
+                        //for (int j = 0; j < cellCount; j++)
+                        //{
+                            ICell cell = headerRow.GetCell(3);
+                            if (cell != null && !string.IsNullOrWhiteSpace(cell.ToString()))
                             {
-                               // XlsxTable.Columns.Add(cell.ToString());
+                            // XlsxTable.Columns.Add(cell.ToString());
+                            MessageBox.Show(cell.ToString());
                             }
-                        }
+                        // }
 
                         for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
                         {
@@ -113,9 +114,19 @@ namespace CronTask.MVVM.ViewModels
                                         rowList.Add(row.GetCell(j).ToString());
                                     }
                                 }
+                                if ( j == 3 )
+                                {
+                                   XlsxTable.Add(HttpsData{
+                                                        ID: i
+                                                        DNS: row.GetCell(j).ToString()
+                                                        HaveTime: ""
+                                                        IsChecker: ""
+                                                        Alerte: ""
+                                                       });
+                                }
                             }
-                           // if (rowList.Count > 0)
-                               // XlsxTable.Rows.Add(rowList.ToArray());
+                            //if (rowList.Count > 0)
+                              
 
                             rowList.Clear();
                         }
