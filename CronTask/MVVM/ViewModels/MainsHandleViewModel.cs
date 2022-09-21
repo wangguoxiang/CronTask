@@ -12,6 +12,10 @@ using NPOI;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using CronTask.MVVM.Models;
+using CronTask.MVVM;
+using System.Collections.ObjectModel;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace CronTask.MVVM.ViewModels
 {
@@ -19,22 +23,32 @@ namespace CronTask.MVVM.ViewModels
     {
         #region Private Fields
         private ICommand _ImportExls;
+        private ICommand _GetDns;
         #endregion
 
         #region Public Properties
         public string WindowTitle { get; set; }
         public string ImportFileLocation { get; set; }
+        public List<int> ID { get; set; }
         public List<string> DNS { get; set; }
         public List<string> HaveTime { get; set; }
         public List<string> IsChecker { get; set; }
         public List<string>  Alerte { get; set; }
-    
+
+        private ObservableCollection<HttpsData> _productCollection = new ObservableCollection<HttpsData>();
+        public ObservableCollection<HttpsData> ProductCollection
+        {
+            get { return _productCollection; }
+            set { _productCollection = value; OnPropertyChangedNew(); }
+        }
+
         #endregion
 
         #region Constructor
         public MainsHandleViewModel()
         {
             WindowTitle = "定时任务";
+            ID = new List<int>();
             DNS = new List<string>();
             HaveTime = new List<string>();
             IsChecker = new List<string>();
@@ -52,6 +66,16 @@ namespace CronTask.MVVM.ViewModels
                 return _ImportExls;
             }
         }
+
+        public ICommand GetDns
+        {
+            get
+            {
+                _GetDns = new RelayCommand(
+                    param => LoadDns());
+                return _GetDns;
+            }
+        }
         #endregion
 
         #region Mode
@@ -60,7 +84,7 @@ namespace CronTask.MVVM.ViewModels
         {
             try
             {
-
+                
                 var dlg = new CommonOpenFileDialog();
                 dlg.Title = "选择一个文件";
                 dlg.IsFolderPicker = false;
@@ -80,6 +104,7 @@ namespace CronTask.MVVM.ViewModels
                 if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     var folder = dlg.FileName;
+                    ProductCollection.Clear();
                     // Do something with selected folder string
                     ImportFileLocation = folder.ToString();
                     OnPropertyChanged("ImportFileLocation");
@@ -99,12 +124,12 @@ namespace CronTask.MVVM.ViewModels
                         int cellCount = headerRow.LastCellNum;
                         //for (int j = 0; j < cellCount; j++)
                         //{
-                            ICell cell = headerRow.GetCell(3);
+                         /*   ICell cell = headerRow.GetCell(3);
                             if (cell != null && !string.IsNullOrWhiteSpace(cell.ToString()))
                             {
                             // XlsxTable.Columns.Add(cell.ToString());
                             MessageBox.Show(cell.ToString());
-                            }
+                            }*/
                         // }
 
                         for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
@@ -114,20 +139,38 @@ namespace CronTask.MVVM.ViewModels
                             if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                             for (int j = row.FirstCellNum; j < cellCount; j++)
                             {
-                              /*  if (row.GetCell(j) != null)
-                                {
-                                    if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
-                                    {
-                                        rowList.Add(row.GetCell(j).ToString());
-                                    }
-                                }*/
-                                if ( j == 3 )
+                                /*  if (row.GetCell(j) != null)
+                                  {
+                                      if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
+                                      {
+                                          rowList.Add(row.GetCell(j).ToString());
+                                      }
+                                  }*/
+
+                                if (row.GetCell(j) == null) continue;
+                                if ( j == 3 && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
                                 {
                                     DNS.Add(row.GetCell(j).ToString());
+                                    ID.Add(DNS.Count);
                                     IsChecker.Add("");
                                     HaveTime.Add("");
                                     Alerte.Add("");
+
                                   
+                                    ProductCollection.Add(new HttpsData
+                                    {
+                                        ID = DNS.Count,
+                                        DNS = row.GetCell(j).ToString(),
+                                        IsChecker = "",
+                                        HaveTime = "",
+                                        Alerte = ""
+                                    });
+
+                                    OnPropertyChanged("ID");
+                                    OnPropertyChanged("DNS");
+                                    OnPropertyChanged("IsChecker");
+                                    OnPropertyChanged("Alerte");
+                                    OnPropertyChanged("HaveTime");
                                 }
                             }
                             //if (rowList.Count > 0)
@@ -136,10 +179,7 @@ namespace CronTask.MVVM.ViewModels
                             rowList.Clear();
                         }
                     }
-                    OnPropertyChanged("DNS");
-                    OnPropertyChanged("IsChecker");
-                    OnPropertyChanged("Alerte");
-                    OnPropertyChanged("HaveTime");
+                   
                 }
             }
             catch (Exception ex)
@@ -149,6 +189,70 @@ namespace CronTask.MVVM.ViewModels
 
         }
 
+        private void LoadDns()
+        {
+            Task task = Task.Factory.StartNew(() =>
+            {
+                ThreadDns();
+            });
+
+        }
+
+        private void ThreadDns()
+        {
+            MatchCollection DnsList;
+            int index = 0;
+            string haveTime;
+            string ptn = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
+            int count = 0;
+            Regex r = new Regex(ptn, RegexOptions.ECMAScript);
+
+            lock (ProductCollection)
+            {
+                if (ProductCollection.Count > 0)
+                {
+                    foreach (var row in ProductCollection)
+                    {
+                        ProductCollection[index].IsChecker = "开始测试";
+                        OnPropertyChangedNew("ProductCollection");
+
+                        haveTime = "";
+
+                        DnsList = r.Matches(row.DNS);
+                        foreach (var dns in DnsList)
+                        {
+                            try
+                            {
+                                X509Certificate2 x509 = HttpCertificate.DownloadSslCertificate(dns.ToString());
+                                if (x509 != null)
+                                {
+                                    if (string.IsNullOrWhiteSpace(haveTime))
+                                    {
+                                        haveTime = string.Format("{0}-{1}", x509.NotAfter.ToString(), x509.NotBefore.ToString());
+                                    }
+                                    else
+                                    {
+                                        haveTime += string.Format(",{0}-{1}", x509.NotAfter.ToString(), x509.NotBefore.ToString());
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                haveTime = ex.ToString();
+                                continue;
+                            }
+
+                            ProductCollection[index].IsChecker = haveTime;
+                            OnPropertyChangedNew("ProductCollection");
+                            index++;
+
+                        }
+                    }
+
+                    MessageBox.Show("检测完成");
+                }
+            } 
+        }
         #endregion
-    }
+    }   
 }

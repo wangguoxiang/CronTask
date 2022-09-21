@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CronTask.MVVM.Models
 {
-    public struct HttpsData
+    public class HttpsData
     {
         public int ID { get; set; }
         public string DNS { get; set; }

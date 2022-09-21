@@ -11,7 +11,7 @@
         Width="1104"
         WindowStartupLocation="CenterScreen"
         Style="{DynamicResource MetroWindowStyle}"
-        ResizeMode="NoResize"
+        ResizeMode="NoResize" 
         Loaded="Window_Loaded">
 
     <Window.Resources>
@@ -155,6 +155,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <vm:MainsHandleViewModel x:Key="MainsHandleViewModel"/>
     </Window.Resources>
     <Window.DataContext>
         <vm:MainsHandleViewModel />

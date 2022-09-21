@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CronTask.MVVM.Views"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
@@ -22,17 +22,11 @@
             <Button Margin="5 0 0 0" ToolTip="选择路径" Command="{Binding ImportExls}">
                 <Path Data="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" Fill="{StaticResource ForegroundBrush}" Stretch="Uniform" />
             </Button>
+            <Button Margin="5 0 0 0" ToolTip="选择路径" Command="{Binding GetDns}" />
         </StackPanel>
         <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal" Margin="5 5 5 5">
-            <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" 
-                               ScrollViewer.HorizontalScrollBarVisibility="Visible" Width="792" >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="56" FontSize="15" Header="域名" Binding="{Binding Path=DNS}"/>
-                    <DataGridTextColumn Width="140" Header="有效时间" FontSize="15"  Binding="{Binding Path=HaveTime}"/>
-                    <DataGridTextColumn Width="140" Header="是否过期" FontSize="15"  Binding="{Binding Path=IsChecker}"/>
-                    <DataGridTextColumn Width="140" Header="报警推送" FontSize="15"  Binding="{Binding Path=Alerte}"/>
-                </DataGrid.Columns>
-     
+            <DataGrid x:Name="dataGrid" AutoGenerateColumns="True"  ItemsSource="{Binding ProductCollection,UpdateSourceTrigger=PropertyChanged}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible" Width="792" >
             </DataGrid>
         </StackPanel>
     </Grid>

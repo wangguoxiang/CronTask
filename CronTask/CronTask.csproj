@@ -138,7 +138,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MVVM\HttsConverters.cs" />
+    <Compile Include="MVVM\HttpsConverters.cs" />
     <Compile Include="MVVM\Models\HttpsData.cs" />
     <Compile Include="MVVM\TypeConverters.cs" />
     <Compile Include="MVVM\ViewModels\MainsHandleViewModel.cs" />
